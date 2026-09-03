@@ -18,12 +18,14 @@ public class Report {
     private Severity severity;
     private String photoBase64;      // optional, data URL / base64 string from the frontend
     private ReportStatus status;
+    private VerificationStatus verification;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Report() {
         this.id = UUID.randomUUID().toString();
         this.status = ReportStatus.PENDING;
+        this.verification = VerificationStatus.UNREVIEWED;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -100,6 +102,15 @@ public class Report {
 
     public void setStatus(ReportStatus status) {
         this.status = status;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public VerificationStatus getVerification() {
+        return verification;
+    }
+
+    public void setVerification(VerificationStatus verification) {
+        this.verification = verification;
         this.updatedAt = LocalDateTime.now();
     }
 
