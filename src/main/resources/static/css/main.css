@@ -215,6 +215,75 @@ select.status-select {
   width: auto;
 }
 
+/* ---- LGA Review page ---- */
+.review-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.review-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.review-title { font-weight: 700; font-size: 15px; }
+.review-time { font-size: 12px; color: #8A8EB0; white-space: nowrap; }
+.review-body { display: flex; gap: 16px; }
+.review-body img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.review-desc { font-size: 14px; color: #2C2F49; line-height: 1.5; margin: 0 0 10px; }
+.review-reporter { font-size: 12.5px; color: #6B7094; margin-bottom: 12px; }
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.verify-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.verify-badge.UNREVIEWED { background: #EEF0F7; color: #565A78; }
+.verify-badge.VERIFIED { background: var(--green-bg); color: var(--green); }
+.verify-badge.REJECTED { background: var(--red-bg); color: var(--red); }
+
+.btn-verify, .btn-reject {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn-verify {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: #86EFAC;
+}
+.btn-verify:hover { background: #BBF7D0; }
+.btn-verify.is-active { background: var(--green); color: white; }
+.btn-reject {
+  background: var(--red-bg);
+  color: var(--red);
+  border-color: #FCA5A5;
+}
+.btn-reject:hover { background: #FECACA; }
+.btn-reject.is-active { background: var(--red); color: white; }
+
 .empty {
   text-align: center;
   color: #8A8EB0;
@@ -504,6 +573,10 @@ table.team-table tr:last-child td { border-bottom: none; }
 
   .report-item { flex-wrap: wrap; }
   .report-top { flex-direction: column; align-items: flex-start; gap: 2px; }
+
+  .review-body { flex-direction: column; }
+  .review-body img { width: 100%; height: 180px; }
+  .review-top { flex-direction: column; gap: 2px; }
 
   .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   table.team-table { min-width: 480px; }
