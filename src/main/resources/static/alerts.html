@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public Alerts — SDMFAS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="kicker">COS202 · GROUP 9</div>
+  <h1>Smart Drainage Monitoring and Flood Alert System</h1>
+  <p class="tagline">Automatically flags an LGA once it has 3 or more unresolved reports.</p>
+</header>
+<nav class="site-nav">
+  <a href="/">Home</a>
+  <a href="/report.html">Report an Incident</a>
+  <a href="/alerts.html" class="active">Public Alerts</a>
+  <a href="/about.html">About</a>
+  <a href="/team.html">Team</a>
+</nav>
+
+<main>
+  <div class="card">
+    <h2>Public flood-status dashboard</h2>
+    <p class="sub">One row per LGA — hotspots surface automatically, no manual review.</p>
+    <div id="alertsList"><div class="empty">Loading…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>All reports</h2>
+    <p class="sub">Every submitted report, most recent first. This is the view an LGA authority would use to update status.</p>
+    <div id="reportsList"><div class="empty">Loading…</div></div>
+  </div>
+</main>
+
+<script src="/js/main.js"></script>
+<script>
+async function loadReports() {
+  const list = document.getElementById('reportsList');
+  const res = await fetch('/api/reports');
+  const reports = await res.json();
+
+  if (reports.length === 0) {
+    list.innerHTML = '<div class="empty">No reports yet. Submit one from the "Report an Incident" page.</div>';
+    return;
+  }
+
+  list.innerHTML = reports.map(r => `
+    <div class="report-item">
+      ${r.photoBase64 ? `<img src="${r.photoBase64}">` : ''}
+      <div class="report-body">
+        <div class="report-top">
+          <span class="report-lga">${labelize(r.lga)} — ${r.streetAddress}</span>
+          <span class="report-time">${new Date(r.createdAt).toLocaleString()}</span>
+        </div>
+        <div class="report-desc">${r.description}</div>
+        <div class="report-meta">
+          <span class="badge ${r.status}">${labelize(r.status)}</span>
+          <select class="status-select" onchange="updateStatus('${r.id}', this.value)">
+            <option value="PENDING" ${r.status === 'PENDING' ? 'selected' : ''}>Pending</option>
+            <option value="IN_PROGRESS" ${r.status === 'IN_PROGRESS' ? 'selected' : ''}>In progress</option>
+            <option value="RESOLVED" ${r.status === 'RESOLVED' ? 'selected' : ''}>Resolved</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function updateStatus(id, status) {
+  await fetch(`/api/reports/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  loadReports();
+  loadAlerts();
+}
+
+async function loadAlerts() {
+  const list = document.getElementById('alertsList');
+  const res = await fetch('/api/alerts');
+  const summaries = await res.json();
+
+  list.innerHTML = summaries.map(s => `
+    <div class="alert-row">
+      <div class="alert-left">
+        <span class="dot ${s.hotspot ? 'hot' : ''}"></span>
+        <span class="alert-name">${labelize(s.lga)}</span>
+      </div>
+      <div class="alert-left">
+        <span class="alert-counts">${s.pendingCount} pending · ${s.inProgressCount} in progress · ${s.resolvedCount} resolved</span>
+        ${s.hotspot ? '<span class="hot-tag">Hotspot</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+loadAlerts();
+loadReports();
+</script>
+
+</body>
+</html>
