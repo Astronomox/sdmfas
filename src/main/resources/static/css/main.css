@@ -1,0 +1,95 @@
+:root {
+  --navy: #1B1D2F;
+  --navy-soft: #262940;
+  --accent: #2563EB;
+  --accent-soft: #DBE7FE;
+  --ink: #10121D;
+  --paper: #F6F7FB;
+  --line: #E3E5EE;
+  --amber: #B45309;
+  --amber-bg: #FEF3C7;
+  --green: #15803D;
+  --green-bg: #DCFCE7;
+  --red: #DC2626;
+  --red-bg: #FEE2E2;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ---- Header / nav, shared across every page ---- */
+header.site-header {
+  background: var(--navy);
+  color: white;
+  padding: 22px 32px 0;
+}
+header.site-header .kicker {
+  color: #8B93C7;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+header.site-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+header.site-header .tagline {
+  margin: 6px 0 20px;
+  color: #B7BCE0;
+  font-size: 14px;
+  max-width: 640px;
+}
+nav.site-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--navy-soft);
+  padding: 0 32px;
+}
+nav.site-nav a {
+  color: #B7BCE0;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 3px solid transparent;
+  display: inline-block;
+}
+nav.site-nav a.active {
+  color: white;
+  border-bottom-color: var(--accent);
+}
+
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px;
+}
+main.wide { max-width: 1000px; }
+
+/* ---- Cards ---- */
+.card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.card .sub {
+  color: #6B7094;
+  font-size: 13px;
+  margin: 0 0 18px;
+}
+
