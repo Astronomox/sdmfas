@@ -15,6 +15,7 @@
     <a href="/">Home</a>
     <a href="/report.html">Report an Incident</a>
     <a href="/alerts.html" class="active">Public Alerts</a>
+    <a href="/verify.html">LGA Review</a>
     <a href="/about.html">About</a>
     <a href="/team.html">Team</a>
   </div>
@@ -23,68 +24,20 @@
 <header class="site-header">
   <div class="kicker">COS202 · GROUP 9</div>
   <h1>Smart Drainage Monitoring and Flood Alert System</h1>
-  <p class="tagline">Automatically flags an LGA once it has 3 or more unresolved reports.</p>
+  <p class="tagline">Automatically flags an LGA once it has 3 or more verified, unresolved reports.</p>
 </header>
 
 <main>
   <div class="card">
     <h2>Public flood-status dashboard</h2>
-    <p class="sub">One row per LGA — hotspots surface automatically, no manual review.</p>
+    <p class="sub">One row per LGA. Counts reflect reports an LGA authority has verified as legitimate — see the LGA Review page for how vetting works.</p>
     <div id="alertsList"><div class="empty">Loading…</div></div>
-  </div>
-
-  <div class="card">
-    <h2>All reports</h2>
-    <p class="sub">Every submitted report, most recent first. This is the view an LGA authority would use to update status.</p>
-    <div id="reportsList"><div class="empty">Loading…</div></div>
   </div>
 </main>
 
 <script src="/js/main.js"></script>
 <script src="/js/nav.js"></script>
 <script>
-async function loadReports() {
-  const list = document.getElementById('reportsList');
-  const res = await fetch('/api/reports');
-  const reports = await res.json();
-
-  if (reports.length === 0) {
-    list.innerHTML = '<div class="empty">No reports yet. Submit one from the "Report an Incident" page.</div>';
-    return;
-  }
-
-  list.innerHTML = reports.map(r => `
-    <div class="report-item">
-      ${r.photoBase64 ? `<img src="${r.photoBase64}">` : ''}
-      <div class="report-body">
-        <div class="report-top">
-          <span class="report-lga">${labelize(r.lga)} — ${r.streetAddress}</span>
-          <span class="report-time">${new Date(r.createdAt).toLocaleString()}</span>
-        </div>
-        <div class="report-desc">${r.description}</div>
-        <div class="report-meta">
-          <span class="badge ${r.status}">${labelize(r.status)}</span>
-          <select class="status-select" onchange="updateStatus('${r.id}', this.value)">
-            <option value="PENDING" ${r.status === 'PENDING' ? 'selected' : ''}>Pending</option>
-            <option value="IN_PROGRESS" ${r.status === 'IN_PROGRESS' ? 'selected' : ''}>In progress</option>
-            <option value="RESOLVED" ${r.status === 'RESOLVED' ? 'selected' : ''}>Resolved</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-async function updateStatus(id, status) {
-  await fetch(`/api/reports/${id}/status`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status })
-  });
-  loadReports();
-  loadAlerts();
-}
-
 async function loadAlerts() {
   const list = document.getElementById('alertsList');
   const res = await fetch('/api/alerts');
@@ -105,7 +58,6 @@ async function loadAlerts() {
 }
 
 loadAlerts();
-loadReports();
 </script>
 
 </body>
