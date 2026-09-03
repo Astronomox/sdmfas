@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report an Incident — SDMFAS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="kicker">COS202 · GROUP 9</div>
+  <h1>Smart Drainage Monitoring and Flood Alert System</h1>
+  <p class="tagline">Report a blocked drain or flooded spot — it gets routed to the responsible LGA automatically.</p>
+</header>
+<nav class="site-nav">
+  <a href="/">Home</a>
+  <a href="/report.html" class="active">Report an Incident</a>
+  <a href="/alerts.html">Public Alerts</a>
+  <a href="/about.html">About</a>
+  <a href="/team.html">Team</a>
+</nav>
+
+<main>
+  <div class="card">
+    <h2>Submit a report</h2>
+    <p class="sub">Location, a short description, and a photo if you have one.</p>
+    <div class="toast" id="submitToast">Report submitted — routed to the LGA below.</div>
+
+    <form id="reportForm">
+      <div class="row">
+        <div class="field">
+          <label for="lga">Local Government Area</label>
+          <select id="lga" required></select>
+        </div>
+        <div class="field">
+          <label for="severity">Severity</label>
+          <select id="severity">
+            <option value="LOW">Low — minor blockage</option>
+            <option value="MEDIUM" selected>Medium — road partly affected</option>
+            <option value="HIGH">High — road impassable / risk to safety</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="address">Street / landmark</label>
+        <input type="text" id="address" placeholder="e.g. Along Ikorodu Road, near Ojota bridge" required>
+      </div>
+
+      <div class="field">
+        <label for="description">What's happening</label>
+        <textarea id="description" placeholder="Describe the blockage or flooding" required></textarea>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="reporterName">Your name (optional)</label>
+          <input type="text" id="reporterName" placeholder="Optional">
+        </div>
+        <div class="field">
+          <label for="phone">Phone (optional)</label>
+          <input type="text" id="phone" placeholder="Optional">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="photo">Photo (optional)</label>
+        <input type="file" id="photo" accept="image/*">
+        <img id="photoPreview">
+      </div>
+
+      <button type="submit" class="submit" id="submitBtn">Submit report</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Your recent submissions</h2>
+    <p class="sub">The last few reports sent from this browser session.</p>
+    <div id="recentList"><div class="empty">Nothing submitted yet this session.</div></div>
+  </div>
+</main>
+
+<script src="/js/main.js"></script>
+<script>
+let photoBase64 = null;
+let recent = [];
+
+document.getElementById('photo').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) { photoBase64 = null; return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    photoBase64 = reader.result;
+    const preview = document.getElementById('photoPreview');
+    preview.src = photoBase64;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('reportForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const payload = {
+    lga: document.getElementById('lga').value,
+    severity: document.getElementById('severity').value,
+    streetAddress: document.getElementById('address').value,
+    description: document.getElementById('description').value,
+    reporterName: document.getElementById('reporterName').value || null,
+    phoneNumber: document.getElementById('phone').value || null,
+    photoBase64: photoBase64
+  };
+
+  try {
+    const res = await fetch('/api/reports', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Submit failed');
+    const saved = await res.json();
+
+    const toast = document.getElementById('submitToast');
+    toast.textContent = `Report submitted — routed to ${labelize(saved.lga)} LGA.`;
+    toast.style.display = 'block';
+    e.target.reset();
+    photoBase64 = null;
+    document.getElementById('photoPreview').style.display = 'none';
+    setTimeout(() => toast.style.display = 'none', 4000);
+
+    recent.unshift(saved);
+    renderRecent();
+  } catch (err) {
+    alert('Could not submit report. Check the server is running.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit report';
+  }
+});
+
+function renderRecent() {
+  const list = document.getElementById('recentList');
+  if (recent.length === 0) {
+    list.innerHTML = '<div class="empty">Nothing submitted yet this session.</div>';
+    return;
+  }
+  list.innerHTML = recent.map(r => `
+    <div class="report-item">
+      ${r.photoBase64 ? `<img src="${r.photoBase64}">` : ''}
+      <div class="report-body">
+        <div class="report-top">
+          <span class="report-lga">${labelize(r.lga)} — ${r.streetAddress}</span>
+          <span class="report-time">${new Date(r.createdAt).toLocaleTimeString()}</span>
+        </div>
+        <div class="report-desc">${r.description}</div>
+        <span class="badge ${r.status}">${labelize(r.status)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+loadLgasInto('lga');
+</script>
+
+</body>
+</html>
