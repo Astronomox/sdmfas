@@ -16,11 +16,14 @@
   <p class="tagline">Automatically flags an LGA once it has 3 or more unresolved reports.</p>
 </header>
 <nav class="site-nav">
-  <a href="/">Home</a>
-  <a href="/report.html">Report an Incident</a>
-  <a href="/alerts.html" class="active">Public Alerts</a>
-  <a href="/about.html">About</a>
-  <a href="/team.html">Team</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/report.html">Report an Incident</a>
+    <a href="/alerts.html" class="active">Public Alerts</a>
+    <a href="/about.html">About</a>
+    <a href="/team.html">Team</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
 </nav>
 
 <main>
@@ -38,6 +41,7 @@
 </main>
 
 <script src="/js/main.js"></script>
+<script src="/js/nav.js"></script>
 <script>
 async function loadReports() {
   const list = document.getElementById('reportsList');

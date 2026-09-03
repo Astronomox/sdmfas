@@ -16,17 +16,21 @@
   <p class="tagline">Eleven members, four departments, one platform.</p>
 </header>
 <nav class="site-nav">
-  <a href="/">Home</a>
-  <a href="/report.html">Report an Incident</a>
-  <a href="/alerts.html">Public Alerts</a>
-  <a href="/about.html">About</a>
-  <a href="/team.html" class="active">Team</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/report.html">Report an Incident</a>
+    <a href="/alerts.html">Public Alerts</a>
+    <a href="/about.html">About</a>
+    <a href="/team.html" class="active">Team</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
 </nav>
 
 <main>
   <div class="card">
     <h2>Team members</h2>
     <p class="sub">Group 9, COS202.</p>
+    <div class="table-scroll">
     <table class="team-table">
       <thead>
         <tr>
@@ -50,8 +54,10 @@
         <tr><td>11</td><td>252609505</td><td>Shodipe-Dosunmu Adeola</td><td><span class="dept-tag">Data Science</span></td></tr>
       </tbody>
     </table>
+    </div>
   </div>
 </main>
 
+<script src="/js/nav.js"></script>
 </body>
 </html>
