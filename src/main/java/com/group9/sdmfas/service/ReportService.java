@@ -3,9 +3,11 @@ package com.group9.sdmfas.service;
 import com.group9.sdmfas.dto.LgaAlertSummary;
 import com.group9.sdmfas.dto.ReportRequest;
 import com.group9.sdmfas.dto.StatusUpdateRequest;
+import com.group9.sdmfas.dto.VerificationUpdateRequest;
 import com.group9.sdmfas.model.Lga;
 import com.group9.sdmfas.model.Report;
 import com.group9.sdmfas.model.ReportStatus;
+import com.group9.sdmfas.model.VerificationStatus;
 import com.group9.sdmfas.repository.ReportRepository;
 import org.springframework.stereotype.Service;
 
@@ -72,11 +74,27 @@ public class ReportService {
         return report;
     }
 
-    /** Handles the ALERT step: aggregates reports per LGA for the public dashboard. */
+    /**
+     * The VET step: an LGA authority marks a report as VERIFIED (a real,
+     * legitimate report) or REJECTED (spam, duplicate, or false). Only
+     * VERIFIED reports are counted in the public alert summary below —
+     * this is what lets the system claim its hotspot flags are trustworthy,
+     * rather than something anyone could trigger by spamming fake reports.
+     */
+    public Report verify(String id, VerificationUpdateRequest request) {
+        Report report = getById(id);
+        report.setVerification(request.getVerification());
+        repository.save(report);
+        return report;
+    }
+
+    /** Handles the ALERT step: aggregates VERIFIED reports per LGA for the public dashboard. */
     public List<LgaAlertSummary> getAlertSummary() {
         return java.util.Arrays.stream(Lga.values())
                 .map(lga -> {
-                    List<Report> reports = repository.findByLga(lga);
+                    List<Report> reports = repository.findByLga(lga).stream()
+                            .filter(r -> r.getVerification() == VerificationStatus.VERIFIED)
+                            .toList();
                     long pending = reports.stream().filter(r -> r.getStatus() == ReportStatus.PENDING).count();
                     long inProgress = reports.stream().filter(r -> r.getStatus() == ReportStatus.IN_PROGRESS).count();
                     long resolved = reports.stream().filter(r -> r.getStatus() == ReportStatus.RESOLVED).count();
