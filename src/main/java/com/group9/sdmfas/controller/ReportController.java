@@ -2,6 +2,7 @@ package com.group9.sdmfas.controller;
 
 import com.group9.sdmfas.dto.ReportRequest;
 import com.group9.sdmfas.dto.StatusUpdateRequest;
+import com.group9.sdmfas.dto.VerificationUpdateRequest;
 import com.group9.sdmfas.model.Lga;
 import com.group9.sdmfas.model.Report;
 import com.group9.sdmfas.service.ReportService;
@@ -45,5 +46,10 @@ public class ReportController {
     @PatchMapping("/{id}/status")
     public Report updateStatus(@PathVariable String id, @Valid @RequestBody StatusUpdateRequest request) {
         return service.updateStatus(id, request);
+    }
+
+    @PatchMapping("/{id}/verify")
+    public Report verify(@PathVariable String id, @Valid @RequestBody VerificationUpdateRequest request) {
+        return service.verify(id, request);
     }
 }
