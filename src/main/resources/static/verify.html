@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LGA Review — SDMFAS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/report.html">Report an Incident</a>
+    <a href="/alerts.html">Public Alerts</a>
+    <a href="/verify.html" class="active">LGA Review</a>
+    <a href="/about.html">About</a>
+    <a href="/team.html">Team</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+</nav>
+<header class="site-header">
+  <div class="kicker">COS202 · GROUP 9</div>
+  <h1>Smart Drainage Monitoring and Flood Alert System</h1>
+  <p class="tagline">This is the internal view an LGA authority uses to vet incoming reports before they count publicly.</p>
+</header>
+
+<main class="wide">
+  <div class="card">
+    <h2>Review incoming reports</h2>
+    <p class="sub">Every report starts as <strong>Unreviewed</strong>. Mark a report <strong>Verified</strong> once you've confirmed it's a real, legitimate issue — only then does it count toward the public hotspot dashboard. Mark it <strong>Rejected</strong> if it's spam, a duplicate, or false. You can also move a verified report's status forward as it gets worked on.</p>
+    <div id="reviewList"><div class="empty">Loading…</div></div>
+  </div>
+</main>
+
+<script src="/js/main.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+async function loadReviewList() {
+  const list = document.getElementById('reviewList');
+  const res = await fetch('/api/reports');
+  const reports = await res.json();
+
+  if (reports.length === 0) {
+    list.innerHTML = '<div class="empty">No reports yet. Submit one from the "Report an Incident" page.</div>';
+    return;
+  }
+
+  list.innerHTML = reports.map(r => `
+    <div class="review-item">
+      <div class="review-top">
+        <span class="review-title">${labelize(r.lga)} — ${r.streetAddress}</span>
+        <span class="review-time">${new Date(r.createdAt).toLocaleString()}</span>
+      </div>
+      <div class="review-body">
+        ${r.photoBase64 ? `<img src="${r.photoBase64}">` : ''}
+        <div style="flex:1; min-width:0;">
+          <p class="review-desc">${r.description}</p>
+          <div class="review-reporter">
+            ${r.reporterName ? `Reported by ${r.reporterName}` : 'Reported anonymously'}
+            ${r.phoneNumber ? ` · ${r.phoneNumber}` : ''}
+            · Severity: ${labelize(r.severity || 'MEDIUM')}
+          </div>
+          <div class="review-actions">
+            <span class="verify-badge ${r.verification}">${labelize(r.verification)}</span>
+            <button class="btn-verify ${r.verification === 'VERIFIED' ? 'is-active' : ''}" onclick="setVerification('${r.id}', 'VERIFIED')">Verify</button>
+            <button class="btn-reject ${r.verification === 'REJECTED' ? 'is-active' : ''}" onclick="setVerification('${r.id}', 'REJECTED')">Reject</button>
+            <span class="badge ${r.status}">${labelize(r.status)}</span>
+            <select class="status-select" onchange="updateStatus('${r.id}', this.value)">
+              <option value="PENDING" ${r.status === 'PENDING' ? 'selected' : ''}>Pending</option>
+              <option value="IN_PROGRESS" ${r.status === 'IN_PROGRESS' ? 'selected' : ''}>In progress</option>
+              <option value="RESOLVED" ${r.status === 'RESOLVED' ? 'selected' : ''}>Resolved</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function setVerification(id, verification) {
+  await fetch(`/api/reports/${id}/verify`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ verification })
+  });
+  loadReviewList();
+}
+
+async function updateStatus(id, status) {
+  await fetch(`/api/reports/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  loadReviewList();
+}
+
+loadReviewList();
+</script>
+
+</body>
+</html>
