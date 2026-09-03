@@ -415,3 +415,17 @@ table.team-table tr:last-child td { border-bottom: none; }
   color: #6B7094;
 }
 
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 30px; }
+  .pipeline { flex-direction: column; }
+  .pipeline-step:first-child { border-radius: 10px 10px 0 0; }
+  .pipeline-step:last-child { border-radius: 0 0 10px 10px; }
+  .pipeline-step:not(:last-child) { border-right: 1px solid var(--line); border-bottom: none; }
+  .audience-grid { flex-direction: column; }
+  .stat-row { flex-direction: column; }
+  .sdg-row { flex-direction: column; }
+  .row { flex-direction: column; }
+  .outcome-card { flex: 1 1 100%; }
+  nav.site-nav { overflow-x: auto; }
+}
