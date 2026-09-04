@@ -500,17 +500,83 @@ table.team-table tr:last-child td { border-bottom: none; }
   gap: 4px;
   font-size: 11px;
   font-weight: 800;
-  color: #7A5A00;
-  background: linear-gradient(135deg, #FDE68A 0%, #F6C90E 45%, #D4A017 100%);
-  padding: 3px 10px 3px 8px;
+  color: #6B4E00;
+  background: linear-gradient(120deg, #FFF3B0, #FFD700 25%, #F6C90E 50%, #FFD700 75%, #FFF3B0);
+  background-size: 220% auto;
+  animation: shimmerGold 3.5s linear infinite;
+  padding: 4px 12px 4px 9px;
   border-radius: 20px;
   margin-left: 6px;
-  box-shadow: 0 1px 4px rgba(212, 160, 23, 0.45);
-  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 2px 10px rgba(212, 160, 23, 0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.5);
 }
 .role-tag-gold::before {
   content: "★";
-  font-size: 10px;
+  font-size: 11px;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5));
+}
+@keyframes shimmerGold {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
+}
+.role-tag-silver {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #3F4759;
+  background: linear-gradient(135deg, #F1F3F6, #D6DBE3 45%, #AEB6C4 100%);
+  padding: 3px 11px 3px 8px;
+  border-radius: 20px;
+  margin-left: 6px;
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 1px 6px rgba(148, 163, 184, 0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.6);
+}
+.role-tag-silver::before {
+  content: "◆";
+  font-size: 9px;
+}
+.role-tag-blue {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 6px;
+}
+.role-tag-green {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--green-bg);
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 6px;
+}
+.role-tag-red {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  background: var(--red-bg);
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 6px;
+}
+.role-tag-neutral {
+  font-size: 11px;
+  font-weight: 700;
+  color: #565A78;
+  background: #EEF0F7;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 6px;
 }
 .dept-tag {
   display: inline-block;
